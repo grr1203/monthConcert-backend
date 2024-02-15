@@ -15,7 +15,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: ap-northeast-2
-  stage: dev-2
+  stage: dev
   environment:
     STAGE: ${env:STAGE, "dev"}
     JWT_SECRET_KEY: ${ssm:/${self:service}/${env:STAGE, "dev"}/jwt_secret_key}
