@@ -141,7 +141,7 @@ functions:
           method: delete
           authorizer: monthconcertAuthorizer
   artist_post:
-    handler: build/artist/post.handler
+    image: 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert:latest
     events:
       - httpApi:
           path: /artist
