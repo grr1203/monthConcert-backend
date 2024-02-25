@@ -29,3 +29,9 @@ __tests__/env.ts
 
 # typescript
 build
+
+.venv
+
+chrome
+# chrome/*
+cookies.pkl

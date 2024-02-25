@@ -37,9 +37,10 @@
     "deploy": "rm -r build || true && tsc --diagnostics && npx sls deploy --verbose --aws-profile zzip",
     "build": "npm run docker-build &&  npm run docker-login && npm run docker-push",
     "docker-push": "docker push 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert:latest",
-    "docker-build": "tsc && docker build --platform linux/amd64 --progress plain -t 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert:latest .",
+    "docker-build": "docker build --platform linux/amd64 --progress plain -t 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert:latest .",
     "docker-login": "aws ecr get-login-password --profile zzip --region ap-northeast-2 | docker login --username AWS --password-stdin 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com",
     "docker-tag": "docker tag monthconcert 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert",
-    "docker-test": "docker run --platform linux/amd64 -p 9000:8080 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert:latest"
+    "docker-test": "docker run --platform linux/amd64 -p 9000:8080 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert:latest",
+    "docker-test2": "docker build --platform linux/amd64 --progress plain -t test_selenium_docker -f Dockerfile2 ."
   }
 }

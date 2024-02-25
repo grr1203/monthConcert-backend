@@ -1,0 +1,32 @@
+# Use a local Docker image instead of public.ecr.aws
+FROM python:3.12.2-alpine3.18 as build
+
+RUN apk update && \
+  apk add --no-cache unzip curl && \
+  curl -Lo "/tmp/chromedriver-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/122.0.6261.57/linux64/chromedriver-linux64.zip" && \
+  curl -Lo "/tmp/chrome-linux64.zip" "https://storage.googleapis.com/chrome-for-testing-public/122.0.6261.57/linux64/chrome-linux64.zip" && \
+  unzip /tmp/chromedriver-linux64.zip -d /opt/ && \
+  unzip /tmp/chrome-linux64.zip -d /opt/
+
+
+# Continue with the rest of your Dockerfile
+FROM python:3.12.2-alpine3.18
+
+
+COPY ./requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY --from=build /opt/chrome-linux64 /opt/chrome 
+COPY --from=build /opt/chromedriver-linux64 /opt/
+
+RUN chmod +x /opt/chrome/chrome
+RUN chmod +x /opt/chromedriver
+
+WORKDIR /app
+# RUN ls /usr/bin
+COPY ./crawling /app
+# Copy your Python code into the container
+
+CMD python3 testmain.py
+# CMD [ "main.handler" ]

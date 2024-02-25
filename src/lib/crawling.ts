@@ -31,10 +31,10 @@ export const getPosting = async (
   //   console.log('content', content);
 
   // instagram 로그인
-  // await page.type('input[name="username"]', '');
-  // await page.type('input[name="password"]', '');
-  // await page.click('button[type="submit"]');
-  // await page.waitForNavigation({ waitUntil: 'networkidle2' });
+  await page.type('input[name="username"]', '');
+  await page.type('input[name="password"]', '');
+  await page.click('button[type="submit"]');
+  await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
   await page.goto(`https://www.instagram.com/${artistAccount}`, { waitUntil: "networkidle2" });
   await page.waitForSelector("article");
