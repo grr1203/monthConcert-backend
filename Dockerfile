@@ -34,6 +34,7 @@ RUN chmod +x /opt/chromedriver
 # Copy your Python code into the container
 COPY ./crawling ./
 
+RUN ls /opt/chrome
 # # Set working directory to function root directory
 # WORKDIR ${FUNCTION_DIR}
 

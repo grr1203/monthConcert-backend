@@ -41,6 +41,7 @@
     "docker-login": "aws ecr get-login-password --profile zzip --region ap-northeast-2 | docker login --username AWS --password-stdin 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com",
     "docker-tag": "docker tag monthconcert 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert",
     "docker-test": "docker run --platform linux/amd64 -p 9000:8080 590183802246.dkr.ecr.ap-northeast-2.amazonaws.com/monthconcert:latest",
-    "docker-test2": "docker build --platform linux/amd64 --progress plain -t test_selenium_docker -f Dockerfile2 ."
+    "docker-test2": "docker build --platform linux/amd64 --progress plain -t test_selenium_docker -f Dockerfile2 .",
+    "docker-test3": "docker build --platform linux/amd64 --progress plain -t test_selenium_docker-3 -f Dockerfile3 ."
   }
 }

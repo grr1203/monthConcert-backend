@@ -8,7 +8,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 import os
-# import pickle
+import pickle
+from shutil import copytree, copyfile
+import subprocess
 
 
 def handler(event, context=''):
@@ -25,18 +27,30 @@ def handler(event, context=''):
 
     chrome_driver_path = "/opt/chromedriver"
     chrome_binary_path = "/opt/chrome/chrome"
+
     if os.environ["STAGE"] == 'test':
         chrome_driver_path = './chrome/chromedriver'
         chrome_binary_path = ''
 
     options = webdriver.ChromeOptions()
-    service = webdriver.ChromeService(chrome_driver_path)
 
-    options.binary_location = chrome_binary_path
     # options.add_argument("--headless=new")
     # options.add_argument("--headless")
 
     if os.environ["STAGE"] != 'test':
+
+        copytree('/opt/chrome', '/tmp/chrome')
+        copyfile('/opt/chromedriver', '/tmp/chromedriver')
+        chrome_binary_path = '/tmp/chrome/chrome'
+        chrome_driver_path = '/tmp/chromedriver'
+
+        command = ["chmod", "755", chrome_driver_path]
+        subprocess.check_output(command, stderr=subprocess.STDOUT)
+        mask = oct(os.stat(chrome_driver_path).st_mode)[-3:]
+        print("File permission mask:", mask)
+
+        print('list dir tmp', os.listdir('/tmp'))
+
         options.add_argument("--headless")
         options.add_argument('--no-sandbox')
         options.add_argument("--disable-gpu")
@@ -46,13 +60,18 @@ def handler(event, context=''):
         options.add_argument("--disable-dev-tools")
         options.add_argument("--no-zygote")
         options.add_argument(f"--user-data-dir={mkdtemp()}")
-        options.add_argument(f"--data-path={mkdtemp()}")    
+        options.add_argument(f"--data-path={mkdtemp()}")
         options.add_argument(f"--disk-cache-dir={mkdtemp()}")
         options.add_argument("--remote-debugging-port=9222")
         options.add_argument(
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.57 Safari/537.36")
 
+    options.binary_location = chrome_binary_path
+
     print('options', options.arguments)
+
+
+    service = webdriver.ChromeService(chrome_driver_path)
 
     browser = webdriver.Chrome(options=options, service=service)
 
@@ -87,7 +106,8 @@ def handler(event, context=''):
     try:
         WebDriverWait(browser, 20).until(EC.url_changes(browser.current_url))
         print("login success")
-        # pickle.dump( browser.get_cookies() , open("cookies.pkl","wb"))
+        pickle.dump(browser.get_cookies(), open("/tmp/cookies.pkl", "wb"))
+        print("cookies saved", browser.get_cookies())
 
     except TimeoutException as e:
         print("Timed out waiting login", e)
@@ -95,15 +115,22 @@ def handler(event, context=''):
     print("res status", browser.title)
 
     browser.get(f"https://www.instagram.com/{artistAccount}")
+    print(browser.get_cookies())
+
+    cookies = pickle.load(open("/tmp/cookies.pkl", "rb"))
+    for cookie in cookies:
+        browser.add_cookie(cookie)
 
     try:
         WebDriverWait(browser, 15).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div._aagv"))
         )
         print("div._aagv element found")
+
     except TimeoutException as e:
         print("Timed out waiting for div._aagv element to appear", e)
 
+    print(browser.get_cookies())
     print("browser title", browser.title)
 
     content = browser.page_source
@@ -122,7 +149,7 @@ def handler(event, context=''):
     #         "img": item.img.get("src")
     #     }
     #     if filterByConcertRelated(posting):
-    #         concertInfo = filterConcertInfo(posting["content"])
+    #         c oncertInfo = filterConcertInfo(posting["content"])
     #         concertInfo["postingUrl"] = f"https://www.instagram.com{item.parent.parent.parent.get('href')}"
     #         if not concertInfo["date"] and not posting["postingUrl"]:
     #             print("수동확인 포스팅 저장 필요")
