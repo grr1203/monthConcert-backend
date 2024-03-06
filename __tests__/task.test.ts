@@ -6,7 +6,7 @@ import { handler as getArtist } from '../src/artist/get';
 import { handler as getCalendar } from '../src/calendar/get';
 
 describe('MonthConcert test', () => {
-  test.only('POST artist', async () => {
+  test('POST artist', async () => {
     const parameters = { artistName: '볼빨간사춘기', instagramAccount: 'official_bol4' };
     const res = await postMusician(createPublicLambdaEvent(parameters));
     console.log('res', res);
@@ -27,8 +27,8 @@ describe('MonthConcert test', () => {
     expect(res).toHaveProperty('statusCode', 200);
   });
 
-  test('GET calendar', async () => {
-    const res = await privateFunctionTest(getCalendar, { year: 2024, month: 2 });
+  test.only('GET calendar', async () => {
+    const res = await privateFunctionTest(getCalendar, { year: 2024, month: 3 });
     expect(res).toHaveProperty('statusCode', 200);
   });
 });
