@@ -29,3 +29,5 @@ __tests__/env.ts
 
 # typescript
 build
+
+.vscode
