@@ -7,11 +7,10 @@
     "removeComments": true, // js 파일에서 주석 제거
     "sourceMap": false,
     "skipLibCheck": true, 
-    "module": "ESNext", // 컴파일된 js의 모듈 시스템
+    "module": "commonjs", // 컴파일된 js의 모듈 시스템
     "esModuleInterop": true, 
     "baseUrl": ".",
     "paths": {},
-    "target": "ESNext", // 컴파일된 js의 ECMAScript 버전
     "outDir": "build", // 컴파일된 파일이 저장될 디렉토리
   },
   // 컴파일 파일 지정
