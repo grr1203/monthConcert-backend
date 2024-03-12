@@ -33,7 +33,8 @@
   },
   "scripts": {
     "test": "npx jest",
-    "start": "tsc && node ./build/local/concert",
+    "concert": "tsc && node ./build/local/concert",
+    "artist": "tsc && node ./build/local/artists",
     "deploy": "rm -r build || true && tsc --diagnostics && npx sls deploy --verbose --aws-profile zzip"
   }
 }

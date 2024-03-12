@@ -154,6 +154,13 @@ functions:
           path: /artist
           method: get
           authorizer: monthconcertAuthorizer
+  artist_search_get:
+    handler: build/artist/get.handler
+    events:
+      - httpApi:
+          path: /artist/search
+          method: get
+          authorizer: monthconcertAuthorizer
   calendar_get:
     handler: build/calendar/get.handler
     events:

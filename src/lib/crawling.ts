@@ -1,6 +1,6 @@
 import { CheerioAPI, Element, load } from "cheerio";
 import puppeteer from "puppeteer";
-import { filterConcertInfo } from "./openai.module";
+import { extractConcertInfo } from "./openai.module";
 import axios from "axios";
 // import { OCRhandler } from './naver/OCR.js';
 
@@ -48,7 +48,7 @@ export const getPosting = async (
     // 콘서트 관련 포스팅만 필터링
     if (await filterByConcertRelated(posting)) {
       // 관련있는 경우 구체적인 정보 추출
-      const concertInfo = await filterConcertInfo(posting.content);
+      const concertInfo = await extractConcertInfo(posting.content);
       console.log("concertInfo", concertInfo);
       concertInfo["postingUrl"] = `https://www.instagram.com${$(this).parent().parent().parent().attr("href")}`;
 
@@ -76,6 +76,7 @@ export const getPosting = async (
 };
 
 export const filterByConcertRelated = async (posting: { content: string; img: string }) => {
+  
   console.log("posting", posting);
   if (!posting.content) return false;
   const concertRelatedKeywords = ["콘서트", "공연", "라이브", "티켓", "예매", "concert", "CONCERT", "ticket", "TICKET"];
@@ -84,10 +85,11 @@ export const filterByConcertRelated = async (posting: { content: string; img: st
   const count = concertRelatedKeywords.filter((keyword) => posting.content.includes(keyword)).length;
   let isConcertRelated = count >= 1;
   console.log("isConcertRelated 1", isConcertRelated);
-  if (!isConcertRelated) return false;
 
+  if (!isConcertRelated) return false;
   // 일시 : 1월 1일 / 1.1 / 1. 1 / 1/1
   const datePattern = /\b\d{1,2}월\s*\d{1,2}일|\b\d{1,2}[.\/]\s*\d{1,2}\b/g;
+
   isConcertRelated = datePattern.test(posting.content);
   console.log("isConcertRelated 2", isConcertRelated);
   if (!isConcertRelated) {
@@ -123,7 +125,7 @@ const getProfileFromNaverContentTag = ($: CheerioAPI, element: Element) => {
   return { profileImage, instaAccount };
 };
 
-export const getArtistsProfiles = async (name: string) => {
+export const getArtistsProfiles = async (name: string): Promise<{ profileImage: string; instaAccount: string }[]> => {
   const NAVER_SEARCH_URL = "https://search.naver.com/search.naver";
   const res = await axios.get(NAVER_SEARCH_URL, {
     params: {
@@ -151,8 +153,8 @@ export const getArtistsProfiles = async (name: string) => {
       });
       return;
     }
-
-    profiles.push(getProfileFromNaverContentTag($, element));
+    const profile = getProfileFromNaverContentTag($, element);
+    profile && profiles.push(profile);
   });
 
   if (sameNameHref.length > 0) {

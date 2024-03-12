@@ -31,3 +31,5 @@ __tests__/env.ts
 build
 
 .vscode
+
+*.log

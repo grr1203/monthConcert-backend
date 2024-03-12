@@ -7,6 +7,7 @@ import { handler as searchArtist } from "../src/artist/search/get";
 import { handler as getCalendar } from "../src/calendar/get";
 import { handler as getAccessToken } from "../src/token/access/get";
 import { generateUserAccessToken } from "../src/lib/jwt";
+import mysqlUtil from "../src/lib/mysqlUtil";
 
 describe("MonthConcert test", () => {
   // test('POST artist', async () => {
@@ -44,10 +45,12 @@ describe("MonthConcert test", () => {
   });
 
   test("GET access token", async () => {
-    const refreshtoken = generateUserAccessToken(1);
+    const refreshtoken = await generateUserAccessToken(3);
+    await mysqlUtil.update("tb_user", { refresh_token: refreshtoken }, { idx: 3 });
     const parameters = { refreshToken: refreshtoken };
     const res = await getAccessToken(createPublicLambdaEvent(parameters));
     console.log("res", res);
     expect(res).toHaveProperty("statusCode", 200);
   });
+
 });
