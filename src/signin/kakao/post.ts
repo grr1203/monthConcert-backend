@@ -25,7 +25,7 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
       userEmail = email;
       fullName = name;
     } catch (err) {
-      console.log('[verifyNaverCode failed]', err);
+      console.log('[verifyKakaoCode failed]', err);
       return { statusCode: 401, body: JSON.stringify({ code: 'Verification_Failed' }) };
     }
 
