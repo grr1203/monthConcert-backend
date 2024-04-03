@@ -26,8 +26,9 @@ export const handler = async (event: APIGatewayProxyEventV2WithLambdaAuthorizer<
     const dateParts = item.date.split(' ')[0].split('-');
     const day = parseInt(dateParts[2]);
 
-    const artist = await mysqlUtil.getOne('tb_artist', ['artist_name'], { idx: item.artist_idx });
-    item.artist_name = artist.artist_name;
+    const artist = await mysqlUtil.getOne('tb_artist', [], { idx: item.artist_idx });
+    item.artistName = artist.artist_name;
+    item.artistAccount = artist.instagram_account;
 
     if (!monthConcert[day]) monthConcert[day] = [];
     monthConcert[day].push(item);
