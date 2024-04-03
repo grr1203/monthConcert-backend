@@ -36,14 +36,14 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
       await mysqlUtil.create('tb_user', {
         user_email: userEmail,
         user_name: fullName,
-        register_type: USER_REGISTER_TYPE.NAVER,
+        register_type: USER_REGISTER_TYPE.KAKAO,
         marketing_agreed: 1, // 가입시 마케팅 동의
       });
       user = await mysqlUtil.getOne('tb_user', [], { user_email: userEmail });
     }
 
     // 로그인
-    await mysqlUtil.update('tb_user', { last_login_type: USER_REGISTER_TYPE.NAVER }, { idx: user.idx });
+    await mysqlUtil.update('tb_user', { last_login_type: USER_REGISTER_TYPE.KAKAO }, { idx: user.idx });
     await mysqlUtil.updateTimestamp('tb_user', 'last_login_date', { idx: user.idx });
     const { accessToken, refreshToken } = await generateTokens(event, user.idx);
 
