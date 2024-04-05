@@ -95,7 +95,7 @@ async function getMany(
     // offset, limit, order를 입력하지 않고 where만 들어가 있는 경우 처리
     findOptions.where = JSON.parse(JSON.stringify(findOptions));
     findOptions.offset = 0;
-    findOptions.limit = 100;
+    findOptions.limit = 1000;
   }
   console.log(`mysql getMany() table: ${table}, attrs: ${attributes}, findOptions: ${JSON.stringify(findOptions)}`);
 

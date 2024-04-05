@@ -77,7 +77,6 @@ export const getPosting = async (
 
 export const filterByConcertRelated = async (posting: { content: string; img: string }) => {
   
-  console.log("posting", posting);
   if (!posting.content) return false;
   const concertRelatedKeywords = ["콘서트", "공연", "라이브", "티켓", "예매", "concert", "CONCERT", "ticket", "TICKET"];
 
