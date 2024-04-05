@@ -23,7 +23,7 @@ export const extractConcertInfo = async (posting: string): Promise<ConcertInfo> 
     model: "gpt-3.5-turbo", // gpt-3.5-turbo-1106
   });
   // console.log("[completion]", completion);
-  // console.log("[completion message]", completion.choices[0]);
+  console.log("[completion message]", completion.choices[0]);
 
   const content = completion.choices[0].message.content;
 

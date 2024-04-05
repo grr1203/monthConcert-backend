@@ -19,6 +19,12 @@ const countObjectValue = (object: Object, value: any) => {
   }
   return count;
 };
+const checktDateFormat = (date: string) => {
+  if (typeof date !== "string") return false;
+  // Regular expression for 'YYYY-MM-DD' format
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  regex.test(date);
+};
 
 const getConcert = async (artists) => {
   const browser = await puppeteer.launch({ headless: false });
@@ -74,7 +80,7 @@ const getConcert = async (artists) => {
 
     let concertInfoArray = [];
 
-    for (const posting of postingArray) {
+    postingLoop: for (const posting of postingArray) {
       if (posting.content && posting.content.startsWith("Photo shared by")) {
         await wait(1000);
         await page.goto(posting.postingUrl, { waitUntil: "networkidle2" });
@@ -93,12 +99,21 @@ const getConcert = async (artists) => {
       if (await filterByConcertRelated(posting)) {
         // 관련있는 경우 구체적인 정보 추출
         const concertInfo = await extractConcertInfo(posting.content);
+
+        if (concertInfo["date"] == null) continue;
+        for (const date of concertInfo["date"]) {
+          if (!checktDateFormat(date)) {
+            console.log("날짜 형식이 잘못되었습니다.", date);
+            continue postingLoop;
+          }
+        }
+
         console.log("concertInfo", concertInfo);
         concertInfo["postingUrl"] = posting["postingUrl"];
         concertInfo["postingImg"] = posting["img"];
 
         // 동일한 계시물이 있는지 확인하고 만약 이미 있는 경우, 더 정확한 정보가 있는 posting으로 업데이트
-        if (concertInfoArray.length !== 0 && concertInfo["date"] !== null) {
+        if (concertInfoArray.length !== 0) {
           for (const item of concertInfoArray) {
             if (JSON.stringify(concertInfo.date.sort()) == JSON.stringify(item.date.sort())) {
               // 더 정보가 많다면 업데이트
