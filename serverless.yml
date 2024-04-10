@@ -168,3 +168,27 @@ functions:
           path: /calendar
           method: get
           authorizer: monthconcertAuthorizer
+  concert_get:
+    handler: build/concert/get.handler
+    events:
+      - httpApi:
+          path: /concert
+          method: get
+  concert_post:
+      handler: build/concert/post.handler
+      events:
+        - httpApi:
+            path: /concert
+            method: post
+  concert_put:
+    handler: build/concert/put.handler
+    events:
+      - httpApi:
+          path: /concert
+          method: put
+  concert_delete:
+    handler: build/concert/delete.handler
+    events:
+      - httpApi:
+          path: /concert
+          method: delete

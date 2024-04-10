@@ -16,5 +16,5 @@ export const handler = async (event: APIGatewayProxyEventV2WithLambdaAuthorizer<
 
   await mysqlUtil.deleteMany("tb_concert", { idx });
 
-  return { statusCode: 200 };
+  return { statusCode: 200, body: JSON.stringify({}) };
 };

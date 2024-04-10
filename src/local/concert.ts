@@ -21,9 +21,8 @@ const countObjectValue = (object: Object, value: any) => {
 };
 const checktDateFormat = (date: string) => {
   if (typeof date !== "string") return false;
-  // Regular expression for 'YYYY-MM-DD' format
-  const regex = /^\d{4}-\d{2}-\d{2}$/;
-  regex.test(date);
+  const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+  return regex.test(date);
 };
 
 const getConcert = async (artists) => {
@@ -191,11 +190,13 @@ const getConcert = async (artists) => {
 (async function () {
   // 전체 Artist post 원할시
 
-  // let artists = await mysqlUtil.getMany("tb_artist", [], {});
-  // await getConcert(artists);
+  let artists = await mysqlUtil.getMany("tb_artist", [], {});
+  artists = artists.slice(14)
+  console.log('starting from', artists[0].artist_name)
+  await getConcert(artists);
 
   // 특정 Artist post 원할시
-  const idx = 207;
-  const instagram_account = "interstellajang";
-  await getConcert([{ idx, instagram_account }]);
+  // const idx = 207;
+  // const instagram_account = "interstellajang";
+  // await getConcert([{ idx, instagram_account }]);
 })();

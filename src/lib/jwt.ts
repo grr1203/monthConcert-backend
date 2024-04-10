@@ -1,36 +1,38 @@
-import jwt from 'jsonwebtoken';
-import mysqlUtil from './mysqlUtil';
-import dayjs from 'dayjs';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import jwt from "jsonwebtoken";
+import mysqlUtil from "./mysqlUtil";
+import dayjs from "dayjs";
+import { APIGatewayProxyEventV2 } from "aws-lambda";
 
 // openssl rand -hex 128
-const secretKey: string = process.env.jwt_secret_key || 'temp_secret_key_monthconcert';
+const secretKey: string = process.env.jwt_secret_key || "temp_secret_key_monthconcert";
+const adminSecretKey: string = process.env.jwt_admin_secret_key || "temp_admin_secret_key_monthconcert";
 
-export const USER_JWT_CONTENTS = ['idx', 'user_email', 'user_name', 'register_type', 'registered_date'];
+export const USER_JWT_CONTENTS = ["idx", "user_email", "user_name", "register_type", "registered_date"];
 
-export const generateJwt = (data: object, exp: string | number) => {
-  return jwt.sign({ ...data }, secretKey, { expiresIn: exp });
+export const generateJwt = (data: object, exp: string | number, admin: boolean = false) => {
+  return jwt.sign({ ...data }, admin ? adminSecretKey : secretKey, { expiresIn: exp });
 };
 
 export const verifyJwtKey = (
-  token: string
+  token: string,
+  admin: boolean = false
 ): { verified: true; decoded: jwt.JwtPayload } | { verified: false; err: string } => {
   try {
-    const decoded = jwt.verify(token, secretKey);
-    console.log('[verifyJwtKey decoded]', decoded);
-    if (typeof decoded === 'string') throw Error('decoded jwt is string, not JwtPayload');
+    const decoded = jwt.verify(token, admin ? adminSecretKey : secretKey);
+    console.log("[verifyJwtKey decoded]", decoded);
+    if (typeof decoded === "string") throw Error("decoded jwt is string, not JwtPayload");
     return { verified: true, decoded };
   } catch (err) {
-    console.log('[verifyJwtKey failed]', err);
+    console.log("[verifyJwtKey failed]", err);
     return { verified: false, err: err.name };
   }
 };
 
 export const generateUserAccessToken = async (userIdx: number, exp = 60 * 30) => {
-  const user = await mysqlUtil.getOne('tb_user', [...USER_JWT_CONTENTS], { idx: userIdx });
+  const user = await mysqlUtil.getOne("tb_user", [...USER_JWT_CONTENTS], { idx: userIdx });
   if (!user) throw new Error(`user not found: userIdx = ${userIdx}`);
 
-  const jwt_item = { first_jwt_iat: dayjs().format('YYYY-MM-DD HH:mm:ss') };
+  const jwt_item = { first_jwt_iat: dayjs().format("YYYY-MM-DD HH:mm:ss") };
   for (const content of USER_JWT_CONTENTS) {
     const value = user[content];
     if (value === undefined) {
@@ -46,11 +48,11 @@ export const generateUserRefreshToken = async (lambda_event: APIGatewayProxyEven
   let user_ip = lambda_event.requestContext.http.sourceIp;
   console.log(`user_ip = ${user_ip}`);
   const jwt_item = { ip: user_ip, idx: user_idx };
-  const token = generateJwt(jwt_item, '180d');
+  const token = generateJwt(jwt_item, "180d");
 
   try {
-    await mysqlUtil.update('tb_user', { refresh_token: token }, { idx: user_idx });
-    console.log('successfully update refresh_token');
+    await mysqlUtil.update("tb_user", { refresh_token: token }, { idx: user_idx });
+    console.log("successfully update refresh_token");
   } catch (e) {
     console.log(`falied to put refresh token`);
   }

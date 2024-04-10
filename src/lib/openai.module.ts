@@ -10,7 +10,7 @@ export const extractConcertInfo = async (posting: string): Promise<ConcertInfo> 
     { 
     name : 콘서트 이름
     place: 콘서트 장소
-    date: 공연 일시 (YYYY-MM-DD HH:mm:ss 형식의 string Array, 만약 연도가 없다면 현재 연도로 채워줘.)
+    date: 공연 일시 (YYYY-MM-DD HH:mm:ss 형식의 string Array, 만약 연도가 없다면 이번년도 숫자로 채워줘.)
     ticketDate: 티켓 예매일시
     ticketPlace: 티켓 예매장소(사이트)
     }`;
@@ -28,7 +28,12 @@ export const extractConcertInfo = async (posting: string): Promise<ConcertInfo> 
   const content = completion.choices[0].message.content;
 
   // 여러번 요청시 ```json\n``` 이 두서에 붙는 경우가 있어서, 이를 제거
-  return content.startsWith("```json\n") ? JSON.parse(content.slice(7, -3)) : JSON.parse(content);
+  if (content.startsWith("```json\n")) {
+    const lastBrace = content.indexOf("}");
+    return JSON.parse(content.slice(7, lastBrace + 1));
+  }
+
+  return JSON.parse(content);
 };
 
 type ConcertInfo = {
