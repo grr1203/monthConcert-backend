@@ -3,6 +3,10 @@ import { createPublicLambdaEvent, privateFunctionTest } from "./testUtil";
 import { handler as getUser } from "../src/user/get";
 import { handler as putUser } from "../src/user/put";
 import { handler as getArtist } from "../src/artist/get";
+import { handler as postArtistFollow } from "../src/artist/follow/post";
+import { handler as getArtistFollow } from "../src/artist/follow/get";
+import { handler as postConcertSave } from "../src/concert/save/post";
+import { handler as getConcertSave } from "../src/concert/save/get";
 import { handler as searchArtist } from "../src/artist/search/get";
 import { handler as getCalendar } from "../src/calendar/get";
 import { handler as getConcert } from "../src/concert/get";
@@ -33,6 +37,34 @@ describe("MonthConcert test", () => {
   test("GET artist", async () => {
     const res = await privateFunctionTest(getArtist, { name: "볼" });
     expect(res).toHaveProperty("statusCode", 200);
+  });
+
+  test("GET artist follow", async () => {
+    const res = await privateFunctionTest(getArtistFollow, {});
+    expect(res).toHaveProperty("statusCode", 200);
+  });
+
+  test("POST artist follow", async () => {
+    const res = await privateFunctionTest(postArtistFollow, { artistIdx: 296, follow: true });
+    expect(res).toHaveProperty("statusCode", 200);
+  });
+  test("POST artist unfollow", async () => {
+    const res2 = await privateFunctionTest(postArtistFollow, { artistIdx: 90, follow: false });
+    expect(res2).toHaveProperty("statusCode", 200);
+  });
+
+  test("GET concert save", async () => {
+    const res = await privateFunctionTest(getConcertSave, {});
+    expect(res).toHaveProperty("statusCode", 200);
+  });
+
+  test("POST concert save", async () => {
+    const res = await privateFunctionTest(postConcertSave, { concertIdx: 180, save: true });
+    expect(res).toHaveProperty("statusCode", 200);
+  });
+  test("POST concert unsave", async () => {
+    const res2 = await privateFunctionTest(postConcertSave, { concertIdx: 180, save: false });
+    expect(res2).toHaveProperty("statusCode", 200);
   });
 
   test("GET artist search", async () => {
