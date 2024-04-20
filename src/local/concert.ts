@@ -8,22 +8,8 @@ import { extractConcertInfo } from "../lib/openai.module";
 import fs from "fs";
 import axios from "axios";
 import { getPresignedPostUrl, s3Url } from "../lib/aws/s3Util";
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-const countObjectValue = (object: Object, value: any) => {
-  const array = Object.values(object);
-  let count = 0;
-  for (let i = 0; i < array.length; ++i) {
-    if (array[i] === value) {
-      count++;
-    }
-  }
-  return count;
-};
-const checktDateFormat = (date: string) => {
-  if (typeof date !== "string") return false;
-  const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-  return regex.test(date);
-};
+import { checktDateFormat, countObjectValue, wait } from "../lib/util";
+
 
 const getConcert = async (artists) => {
   const browser = await puppeteer.launch({ headless: false });

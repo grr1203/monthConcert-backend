@@ -37,6 +37,7 @@
     "test": "npx jest",
     "concert": "tsc && node ./build/local/concert",
     "artist": "tsc && node ./build/local/artists",
+    "popup": "tsc && node ./build/local/popupStore",
     "deploy": "rm -r build || true && tsc --diagnostics && npx sls deploy --verbose --aws-profile zzip"
   }
 }

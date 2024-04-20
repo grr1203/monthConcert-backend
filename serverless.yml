@@ -192,3 +192,27 @@ functions:
       - httpApi:
           path: /concert
           method: delete
+  popup_get:
+    handler: build/popup/get.handler
+    events:
+      - httpApi:
+          path: /popup
+          method: get
+  popup_post:
+      handler: build/popup/post.handler
+      events:
+        - httpApi:
+            path: /popup
+            method: post
+  popup_put:
+    handler: build/popup/put.handler
+    events:
+      - httpApi:
+          path: /popup
+          method: put
+  popup_delete:
+    handler: build/popup/delete.handler
+    events:
+      - httpApi:
+          path: /popup
+          method: delete
