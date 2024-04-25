@@ -167,7 +167,6 @@ functions:
       - httpApi:
           path: /calendar
           method: get
-          authorizer: monthconcertAuthorizer
   concert_get:
     handler: build/concert/get.handler
     events:
@@ -216,3 +215,31 @@ functions:
       - httpApi:
           path: /popup
           method: delete
+  artist_follow_post:
+    handler: build/artist/follow/post.handler
+    events:
+      - httpApi:
+          path: /artist/follow
+          method: post
+          authorizer: monthconcertAuthorizer
+  artist_follow_get:
+    handler: build/artist/follow/get.handler
+    events:
+      - httpApi:
+          path: /artist/follow
+          method: get
+          authorizer: monthconcertAuthorizer
+  concert_save_post:
+    handler: build/concert/save/post.handler
+    events:
+      - httpApi:
+          path: /concert/save
+          method: post
+          authorizer: monthconcertAuthorizer
+  concert_save_get:
+    handler: build/concert/save/post.handler
+    events:
+      - httpApi:
+          path: /concert/save
+          method: get
+          authorizer: monthconcertAuthorizer
