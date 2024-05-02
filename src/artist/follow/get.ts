@@ -13,13 +13,13 @@ export const handler = async (event: APIGatewayProxyEventV2WithLambdaAuthorizer<
   const userIdx = event.requestContext.authorizer.lambda.idx;
 
   try {
-    const res = await mysqlUtil.raw(`SELECT tb_artist.artist_name, tb_artist.instagram_account 
+    const followArtistArray = await mysqlUtil.raw(`SELECT tb_artist.idx, tb_artist.artist_name, tb_artist.instagram_account 
     FROM tb_artist_follow 
     JOIN tb_artist ON tb_artist_follow.artist_idx = tb_artist.idx 
     WHERE user_idx = ${userIdx}`);
-    console.log("[res]", res);
+    console.log("[followArtistArray]", followArtistArray);
 
-    return { statusCode: 200, body: JSON.stringify({ res }) };
+    return { statusCode: 200, body: JSON.stringify({ followArtistArray }) };
   } catch (error) {
     console.log(error);
     return { statusCode: 500, body: JSON.stringify({}) };
