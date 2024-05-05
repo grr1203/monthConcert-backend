@@ -34,7 +34,8 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
   }
 
   const monthConcert = {};
-  const followedArtistsMonthConcert = {};
+  const followedArtistsConcert = {};
+  const savedMonthConcert = {};
   // 데이터를 날짜별로 그룹화
   const monthConcertArrayPromise = monthConcertArray.map(async (item) => {
     const dateParts = item.date.split(' ')[0].split('-');
@@ -50,15 +51,18 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
     monthConcert[day].push(item);
 
     if (followedArtistIdxArray?.includes(item.artist_idx)) {
-      if (!followedArtistsMonthConcert[day]) followedArtistsMonthConcert[day] = [];
-      followedArtistsMonthConcert[day].push(item);
+      if (!followedArtistsConcert[day]) followedArtistsConcert[day] = [];
+      followedArtistsConcert[day].push(item);
+    }
+    if (savedConcertIdxArray?.includes(item.idx)) {
+      if (!savedMonthConcert[day]) savedMonthConcert[day] = [];
+      savedMonthConcert[day].push(item);
     }
   });
   await Promise.all(monthConcertArrayPromise);
-  console.log('[monthConcert]', monthConcert);
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ monthConcert, followedArtistsConcert: followedArtistsMonthConcert }),
+    body: JSON.stringify({ monthConcert, followedArtistsConcert, savedMonthConcert }),
   };
 };

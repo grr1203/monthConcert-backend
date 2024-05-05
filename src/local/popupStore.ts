@@ -4,7 +4,7 @@ import { load } from 'cheerio';
 import mysqlUtil from '../lib/mysqlUtil';
 import { extractPopupStoreInfo } from '../lib/openai.module';
 import fs from 'fs';
-import { wait } from '../lib/util';
+import { checktYYYYMMDDFormat, wait } from '../lib/util';
 
 const popupstore_account_list = [
   `popupstorego`,
@@ -103,7 +103,7 @@ const getPopupStore = async (popup_account_list) => {
       popupStoreInfo['postingUrl'] = posting['postingUrl'];
       // concertInfo["postingImg"] = posting["img"];
 
-      if (popupStoreInfo['date'] !== null) {
+      if (popupStoreInfo['date'] !== null && Array.isArray(popupStoreInfo['date'])) {
         popupStoreInfoArray.push(popupStoreInfo);
       }
     }
@@ -116,10 +116,17 @@ const getPopupStore = async (popup_account_list) => {
         const popupStore = {
           name: popupStoreInfo.name,
           place: popupStoreInfo.place,
-          date: `${popupStoreInfo.date}`,
           time: popupStoreInfo.time,
           posting_url: popupStoreInfo.postingUrl,
         };
+        const from = popupStoreInfo.date[0];
+        const to = popupStoreInfo.date[1];
+        if (from && checktYYYYMMDDFormat(from)) {
+          popupStore['from'] = from;
+        }
+        if (to && checktYYYYMMDDFormat(to)) {
+          popupStore['to'] = to;
+        }
         // 중복 체크
         const existPopupStore = await mysqlUtil.getOne('tb_popup_store', [], { posting_url: popupStore.posting_url });
         if (existPopupStore) continue;

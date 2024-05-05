@@ -215,6 +215,26 @@ functions:
       - httpApi:
           path: /popup
           method: delete
+  popup__calendar_get:
+    handler: build/popup/calendar/get.handler
+    events:
+      - httpApi:
+          path: /popup/calendar
+          method: get
+  popup__likes_get:
+    handler: build/popup/likes/get.handler
+    events:
+      - httpApi:
+          path: /popup/likes
+          method: get
+          authorizer: monthconcertAuthorizer
+  popup_likes_post:
+      handler: build/popup/likes/post.handler
+      events:
+        - httpApi:
+            path: /popup/likes
+            method: post
+            authorizer: monthconcertAuthorizer
   artist_follow_post:
     handler: build/artist/follow/post.handler
     events:
