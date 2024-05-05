@@ -5,6 +5,8 @@ import mysqlUtil from '../lib/mysqlUtil';
 import { extractPopupStoreInfo } from '../lib/openai.module';
 import fs from 'fs';
 import { checktYYYYMMDDFormat, wait } from '../lib/util';
+import axios from 'axios';
+import { getPresignedPostUrl, s3Url } from '../lib/aws/s3Util';
 
 const popupstore_account_list = [
   `popupstorego`,
@@ -34,8 +36,8 @@ const getPopupStore = async (popup_account_list) => {
   // let content = await page.content();
   //   console.log('content', content);
 
-  const username = 'zzipwooung@gmail.com';
-  const password = 'zxc123ZXC!@#';
+  const username = 'monthconcert@gmail.com' //'zzipwooung@gmail.com';
+  const password = 'monthconcert123!!' //'zxc123ZXC!@#';
 
   // instagram 로그인
   await page.type('input[name="username"]', username);
@@ -47,7 +49,7 @@ const getPopupStore = async (popup_account_list) => {
     console.log('[popup_account]', popup_account);
 
     // 일정시간 기다림없이 계속요청시 401 에러 발생
-    await wait(4000);
+    await wait(9000);
 
     try {
       await page.goto(`https://www.instagram.com/${popup_account}`, { waitUntil: 'networkidle2' });
@@ -59,6 +61,7 @@ const getPopupStore = async (popup_account_list) => {
 
     const content = await page.content();
     const $ = load(content);
+    console.log('get content');
 
     const postingArray = [];
 
@@ -101,7 +104,7 @@ const getPopupStore = async (popup_account_list) => {
 
       console.log('popupStoreInfo', popupStoreInfo);
       popupStoreInfo['postingUrl'] = posting['postingUrl'];
-      // concertInfo["postingImg"] = posting["img"];
+      popupStoreInfo['postingImg'] = posting['img'];
 
       if (popupStoreInfo['date'] !== null && Array.isArray(popupStoreInfo['date'])) {
         popupStoreInfoArray.push(popupStoreInfo);
@@ -130,7 +133,17 @@ const getPopupStore = async (popup_account_list) => {
         // 중복 체크
         const existPopupStore = await mysqlUtil.getOne('tb_popup_store', [], { posting_url: popupStore.posting_url });
         if (existPopupStore) continue;
-        else await mysqlUtil.create('tb_popup_store', popupStore);
+        else {
+          // 이미지 s3 업로드
+          const response = await axios.get(popupStoreInfo.postingImg, { responseType: 'arraybuffer' });
+          const imageBuffer = Buffer.from(response.data, 'binary');
+          const postingImageKey = `popup/${popupStoreInfo.name}/${popupStoreInfo.postingUrl.split('/')[4]}/posting.png`;
+          const postingImageUrl = await getPresignedPostUrl(postingImageKey);
+          await axios.put(postingImageUrl, imageBuffer, { headers: { 'Content-Type': 'image/png' } });
+          popupStore['posting_img'] = s3Url + postingImageKey;
+
+          await mysqlUtil.create('tb_popup_store', popupStore);
+        }
       }
     }
   }
