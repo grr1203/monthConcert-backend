@@ -70,6 +70,9 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
   popupStore.byDay = popupStoreByDay;
   likesPopupStore.byDay = likesPopupStoreByDay;
 
+  console.log('popupStore', popupStore);
+  console.log('likesPopupStore', likesPopupStore);
+
   return {
     statusCode: 200,
     body: JSON.stringify({ popupStore, likesPopupStore }),
