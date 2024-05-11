@@ -215,13 +215,13 @@ functions:
       - httpApi:
           path: /popup
           method: delete
-  popup__calendar_get:
+  popup_calendar_get:
     handler: build/popup/calendar/get.handler
     events:
       - httpApi:
           path: /popup/calendar
           method: get
-  popup__likes_get:
+  popup_likes_get:
     handler: build/popup/likes/get.handler
     events:
       - httpApi:
