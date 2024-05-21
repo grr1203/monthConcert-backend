@@ -22,8 +22,8 @@ const getConcert = async (artists) => {
   // let content = await page.content();
   //   console.log('content', content);
 
-  const username = 'zzipwooung@gmail.com';
-  const password = 'zxc123ZXC!@#';
+  const username = 'monthconcert@gmail.com' //'zzipwooung@gmail.com';
+  const password = 'monthconcert123!!' //'zxc123ZXC!@#';
 
   // instagram 로그인
   await page.type('input[name="username"]', username);
@@ -37,7 +37,7 @@ const getConcert = async (artists) => {
     console.log('[artistAccount]', artistAccount);
 
     // 일정시간 기다림없이 계속요청시 401 에러 발생
-    await wait(4000);
+    await wait(9000);
 
     try {
       await page.goto(`https://www.instagram.com/${artistAccount}`, { waitUntil: 'networkidle2' });
@@ -146,7 +146,7 @@ const getConcert = async (artists) => {
             // 이미지 s3 업로드
             const response = await axios.get(concertInfoArray[i].postingImg, { responseType: 'arraybuffer' });
             const imageBuffer = Buffer.from(response.data, 'binary');
-            const postingImageKey = `${artist.atrist_name}/${concertInfoArray[i].date[j].split(' ')[0]}/posting.png`;
+            const postingImageKey = `${artist.artist_name}/${concertInfoArray[i].date[j].split(' ')[0]}/posting.png`;
             const postingImageUrl = await getPresignedPostUrl(postingImageKey);
             await axios.put(postingImageUrl, imageBuffer, { headers: { 'Content-Type': 'image/png' } });
 
@@ -182,7 +182,7 @@ const getConcert = async (artists) => {
   // 전체 Artist post 원할시
 
   let artists = await mysqlUtil.getMany('tb_artist', [], {});
-  artists = artists.slice(14);
+  artists = artists.slice(127);
   console.log('starting from', artists[0].artist_name);
   await getConcert(artists);
 
