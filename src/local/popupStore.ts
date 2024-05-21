@@ -22,6 +22,7 @@ const popupstore_account_list = [
 
   'seoul_life___',
   'enjou.seoul',
+  'nowistravel'
 ];
 
 const getPopupStore = async (popup_account_list) => {
