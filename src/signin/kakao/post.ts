@@ -8,20 +8,20 @@ import { verifyKakaoCode } from '../../lib/loginUtil';
 const parameter = {
   type: 'object',
   properties: {
-    code: { type: 'string' }, // kakao에서 발급한 authorization code
+    token: { type: 'string' }, // kakao에서 발급한 token
   },
-  required: ['code'],
+  required: ['token'],
 } as const;
 
 export const handler = async (event: APIGatewayProxyEventV2) => {
   console.log('[event]', event);
-  const { code } = JSON.parse(event.body) as FromSchema<typeof parameter>;
+  const { token } = JSON.parse(event.body) as FromSchema<typeof parameter>;
 
   try {
-    // kakao server에서 발급한 authorization code 검증 및 payload 조회
+    // kakao server에서 발급한 token 검증 및 payload 조회
     let userEmail: string, fullName: string;
     try {
-      const { email, name } = await verifyKakaoCode(code);
+      const { email, name } = await verifyKakaoCode(token);
       userEmail = email;
       fullName = name;
     } catch (err) {

@@ -3,29 +3,29 @@ import { FromSchema } from 'json-schema-to-ts';
 import mysqlUtil from '../../lib/mysqlUtil';
 import { generateTokens } from '../../lib/jwt';
 import { USER_REGISTER_TYPE } from '../../lib/constants/user';
-import { verifyNaverCode } from '../../lib/loginUtil';
+import { verifyNaverToken } from '../../lib/loginUtil';
 
 const parameter = {
   type: 'object',
   properties: {
-    code: { type: 'string' }, // naver에서 발급한 authorization code
+    naverAccessToken: { type: 'string' }, // naver에서 발급한 access token
   },
-  required: ['code'],
+  required: ['naverAccessToken'],
 } as const;
 
 export const handler = async (event: APIGatewayProxyEventV2) => {
   console.log('[event]', event);
-  const { code } = JSON.parse(event.body) as FromSchema<typeof parameter>;
+  const { naverAccessToken } = JSON.parse(event.body) as FromSchema<typeof parameter>;
 
   try {
-    // naver server에서 발급한 authorization code 검증 및 payload 조회
+    // naver server에서 발급한 accss token 검증 및 payload 조회
     let userEmail: string, fullName: string;
     try {
-      const { email, name } = await verifyNaverCode(code);
+      const { email, name } = await verifyNaverToken(naverAccessToken);
       userEmail = email;
       fullName = name;
     } catch (err) {
-      console.log('[verifyNaverCode failed]', err);
+      console.log('[verifyNaverToken failed]', err);
       return { statusCode: 401, body: JSON.stringify({ code: 'Verification_Failed' }) };
     }
 
